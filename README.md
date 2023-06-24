@@ -9,13 +9,13 @@ When you first run the program, it will prompt you to input your cookie. This ca
 
 To find it, open inspect element (Ctrl+Shift+I, or F12), and to go the network tab.
 
-![image](https://github.com/trinkey/tringit/assets/97406176/90ce4bc6-0cb8-4a52-b6ae-33e5fdaa977c)
+![image](https://github.com/trinkey/tringit/assets/97406176/dc95f38d-0c22-4f5c-9d7f-619b098ffd45)
 
 Next, go to your [trinket library](https://trinket.io/library/trinkets), and look for a request that has the name of something along the lines of `trinkets?limit=20&sort=xyz`. Once you find it, click on it.
 
 (In firefox, the `trinkets?limit=20...` request will be under the `File` tab, unline `Name` in Chromium-based browsers)
 
-![image](https://github.com/trinkey/tringit/assets/97406176/737481dc-2ca5-421d-8ccc-fc8c4963cab9)
+![image](https://github.com/trinkey/tringit/assets/97406176/ff81de4f-6fbe-413a-b75c-bbda64cacc56)
 
 When you click on it, make sure you are on the headers tab of the request info, and then scroll down to the section labeled `Request Headers`. Inside should be an item labelled `Cookie`. Copy the value of that and paste it into the program.
 
