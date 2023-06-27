@@ -48,7 +48,7 @@ class Main:
         self.lang = info["lang"]
 
         while True:
-            f = input(f"What do you want to do?\n1- Change trinket (Current: {self.name} - {self.lang} / {self.shortID})\n2- Clone current state of the trinket to current directory\n3- Push current changes to trinket\n4- Dump trinket library files\n5- Reset cookie\n>>> ")
+            f = input(f"What do you want to do?\n1- Change trinket (Current: {self.name} - {self.lang} / {self.shortID})\n2- Clone current state of the trinket to current directory\n3- Push current changes to trinket\n4- Dump trinket library files\n5- Reset cookie\n6- List your published trinkets\n>>> ")
             if f == "1":
                 self.shortID = input("Please enter the trinket id (found in the url).\n>>> ")
                 print("Getting info...")
@@ -79,6 +79,16 @@ class Main:
                 f = open(f"{self.path}/.tringit/cookie.txt", "w")
                 f.write(self.cookie)
                 f.close()
+            elif f == "6":
+                print("Getting trinket list...")
+                x = self.trinketList()
+                for i in x["trinkets"]:
+                    if i["published"]:
+                        print(f"/sites/{i['published']}")
+                for i in x["folders"]:
+                    for o in x["folders"][i]:
+                        if o["published"]:
+                            print(f"/sites/{o['published']}")
             else:
                 print("Invalid input")
 
@@ -106,11 +116,12 @@ class Main:
         for i in f:
             k = self.loadInfo(i["shortCode"])
             trinkets.append({
-                "name"    : i["name"],
-                "shortID" : i["shortCode"],
-                "longID"  : k["longID"],
-                "lang"    : i["lang"],
-                "code"    : k["code"]
+                "name"      : i["name"],
+                "shortID"   : i["shortCode"],
+                "longID"    : k["longID"],
+                "lang"      : i["lang"],
+                "code"      : k["code"],
+                "published" : False if "published" not in k or not k["published"] else k["slug"]
             })
 
         output = {
@@ -125,11 +136,12 @@ class Main:
             for o in g:
                 k = self.loadInfo(o["shortCode"])
                 trinkets.append({
-                    "name"    : o["name"],
-                    "shortID" : o["shortCode"],
-                    "longID"  : k["longID"],
-                    "lang"    : o["lang"],
-                    "code"    : k["code"]
+                    "name"      : o["name"],
+                    "shortID"   : o["shortCode"],
+                    "longID"    : k["longID"],
+                    "lang"      : o["lang"],
+                    "code"      : k["code"],
+                    "published" : k["published"]
                 })
             output["folders"][i["name"]] = [i for i in trinkets]
 
@@ -151,11 +163,12 @@ class Main:
             })
 
         return {
-            "name"    : x["name"],
-            "longID"  : x["id"],
-            "shortID" : id,
-            "lang"    : x["lang"],
-            "code"    : files
+            "name"      : x["name"],
+            "longID"    : x["id"],
+            "shortID"   : id,
+            "lang"      : x["lang"],
+            "code"      : files,
+            "published" : False if not x["published"] else x["slug"]
         }
 
     def getHeaders(self):
