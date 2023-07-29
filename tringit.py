@@ -12,13 +12,18 @@ except ImportError:
 class Main:
     def __init__(self):
         print("Setting up...")
-        self.debug = False
+        self.debug = True
         self.version = 0.1
         self.path = os.path.abspath(".")
         self.id = ""
+        self.defaultFilenames = [
+            "index.html",
+            "main.py"
+        ]
         self.fileBlacklist = [
             os.path.basename(__file__),
-            "library.json"
+            "library.json",
+            "library-parser.py"
         ]
 
         if not os.path.exists(f"{self.path}/.tringit"):
@@ -42,10 +47,17 @@ class Main:
             f.write(self.shortID)
             f.close()
 
-        info = self.loadInfo(self.shortID)
-        self.longID = info["longID"]
-        self.name = info["name"]
-        self.lang = info["lang"]
+        try:
+            info = self.loadInfo(self.shortID)
+            self.longID = info["longID"]
+            self.name = info["name"]
+            self.lang = info["lang"]
+        except:
+            print("The ID inputted is either incorrect or the trinket has been deleted.")
+            self.shortID = input("Please enter the trinket id (found in the url).\n>>> ")
+            f = open(f"{self.path}/.tringit/current.txt", "w")
+            f.write(self.shortID)
+            f.close()
 
         while True:
             f = input(f"What do you want to do?\n1- Change trinket (Current: {self.name} - {self.lang} / {self.shortID})\n2- Clone current state of the trinket to current directory\n3- Push current changes to trinket\n4- Dump trinket library files\n5- Reset cookie\n6- List your published trinkets\n>>> ")
@@ -64,7 +76,7 @@ class Main:
                 self.clone()
             elif f == "3":
                 print("Pushing...")
-                self.push()
+                print(self.push())
             elif f == "4":
                 print("Getting trinket list...")
                 try:
@@ -91,6 +103,13 @@ class Main:
                             print(f"/sites/{o['published']}")
             else:
                 print("Invalid input")
+
+    def sortKey(self, thing):
+        fileType = thing.split(".")[-1]
+        if thing in self.defaultFilenames:
+            return "A" + fileType + thing
+        else:
+            return "B" + fileType + thing
 
     def dpr(self, string):
         if self.debug:
@@ -190,9 +209,9 @@ class Main:
 
     def push(self):
         code = ""
-        for i in os.listdir(self.path):
+        for i in sorted(os.listdir(self.path), key=self.sortKey):
             if i not in self.fileBlacklist and os.path.isfile(f"{self.path}/{i}"):
-                code += '{"name": "' + i + '", "content": "' + open(f"{self.path}/{i}", "r").read().replace("\n", "\\n").replace("\"", "\\\"") + '"},'
+                code += '{"name": "' + i + '", "content": "' + open(f"{self.path}/{i}", "r").read().replace("\\", "\\\\").replace("\n", "\\n").replace("\"", "\\\"") + '"},'
 
         return requests.put(
             f"https://trinket.io/api/trinkets/{self.longID}/code",
