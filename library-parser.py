@@ -5,7 +5,7 @@ directory = os.path.abspath(".")
 unnamedIndex = 1
 unnamed = 1
 try:
-    f = json.loads(open("library.json", "r", encoding="utf-8").read().replace("\\r\\n", "\\n"))
+    f = json.loads(open("library.json", "r", encoding="utf-8").read().replace("\r\n", "\n"))
 except:
     print("library.json not found! Run tringit and type 4 to create it.")
     exit()
